@@ -14,39 +14,29 @@ enum Temperature: String, CaseIterable {
 }
 
 struct ContentView: View {
-    @State private var convertFrom = 0.0
+    @State private var inputOrigin = 0.0
     @State private var inputUnitTemp: Temperature = .celsius
     @State private var outputUnitTemp: Temperature = .celsius
     
-    private var convertTo: Double {
+    private var inputConverted: Double {
         switch inputUnitTemp {
         case .celsius:
-            switch outputUnitTemp {
-            case .celsius:
-                return convertFrom
-            case .fahrenheit:
-                return (convertFrom * 9 / 5) + 32
-            case .kelvin:
-                return convertFrom + 273.15
-            }
+            return inputOrigin
         case .fahrenheit:
-            switch outputUnitTemp {
-            case .celsius:
-                return (convertFrom - 32) * 5 / 9
-            case .fahrenheit:
-                return convertFrom
-            case .kelvin:
-                return (convertFrom + 273.15 - 32) * 5 / 9
-            }
+            return (inputOrigin - 32) * 5 / 9
         case .kelvin:
-            switch outputUnitTemp {
-            case .celsius:
-                return convertFrom - 273.15
-            case .fahrenheit:
-                return ((convertFrom - 273.15) * 9 / 5) + 32
-            case .kelvin:
-                return convertFrom
-            }
+            return inputOrigin - 273.15
+        }
+    }
+    
+    private var output: Double {
+        switch outputUnitTemp {
+        case .celsius:
+            return inputConverted
+        case .fahrenheit:
+            return (inputConverted * 9 / 5) + 32
+        case .kelvin:
+            return inputConverted + 273.15
         }
     }
     
@@ -55,7 +45,7 @@ struct ContentView: View {
             Form {
                 Section("Enter temperature to convert:") {
                     HStack {
-                        TextField("0.0", value: $convertFrom, format: .number)
+                        TextField("0.0", value: $inputOrigin, format: .number)
                             .keyboardType(.decimalPad)
                         Picker("", selection: $inputUnitTemp) {
                             ForEach(Temperature.allCases, id: \.self) { it in
@@ -67,7 +57,7 @@ struct ContentView: View {
                 
                 Section("Result") {
                     HStack {
-                        Text(convertTo, format: .number)
+                        Text(output, format: .number)
                         Picker("", selection: $outputUnitTemp) {
                             ForEach(Temperature.allCases, id: \.self) { it in
                                 Text(it.rawValue)
